@@ -36,7 +36,7 @@ const AddNoteForm = () => {
     };
 
     async function submitData() {
-      const response = await fetch(`${process.env.API_URL}/note`, requestOptions);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/note`, requestOptions);
       if (response.ok) {
         setIsSuccess(true);
       } else {
