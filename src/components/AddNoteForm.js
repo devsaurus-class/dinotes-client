@@ -1,15 +1,18 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
-import { Form, FormGroup, Label, Input, TextArea } from './ui/Form';
-import Button from './ui/Button';
-import Message from './ui/Message';
+import React, { useState } from "react";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
+import { Form, FormGroup, Label, Input, TextArea } from "./ui/Form";
+import Button from "./ui/Button";
+import Message from "./ui/Message";
+import { addNewNote, statusReset } from "../features/notes/notesSlice";
 
 const InfoWrapper = (props) => {
   const { status } = props;
 
   if (status !== null) {
     if (status === false) {
-      return <Message type="error" text="Title harus diisi"  />;
+      return <Message type="error" text="Title harus diisi" />;
     }
     return <Message type="success" text="Data berhasil disimpan" />;
   }
@@ -17,7 +20,8 @@ const InfoWrapper = (props) => {
 };
 
 const AddNoteForm = () => {
-  const [state, setState] = useState({ title: '', note: '' });
+  const dispatch = useDispatch();
+  const [state, setState] = useState({ title: "", note: "" });
   const [isSuccess, setIsSuccess] = useState(null);
 
   const handleTitleChange = (e) => {
@@ -28,25 +32,23 @@ const AddNoteForm = () => {
     setState({ ...state, note: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    async function submitData() {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/note`, requestOptions);
-      if (response.ok) {
+    try {
+      const actionResult = await dispatch(addNewNote(state));
+      const result = unwrapResult(actionResult);
+      if(result) {
         setIsSuccess(true);
       } else {
         setIsSuccess(false);
       }
+    } catch (err) {
+      console.error("Terjadi kesalahan: ", err);
+      setIsSuccess(false);
+    } finally {
+      dispatch(statusReset())
     }
-
-    submitData();
-
-    e.preventDefault();
   };
 
   const { title, note } = state;
@@ -57,11 +59,21 @@ const AddNoteForm = () => {
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label>Title</Label>
-          <Input type="text" name="title" value={title} onChange={handleTitleChange} />
+          <Input
+            type="text"
+            name="title"
+            value={title}
+            onChange={handleTitleChange}
+          />
         </FormGroup>
         <FormGroup>
           <Label>Note</Label>
-          <TextArea name="note" rows="12" value={note} onChange={handleNoteChange} />
+          <TextArea
+            name="note"
+            rows="12"
+            value={note}
+            onChange={handleNoteChange}
+          />
         </FormGroup>
         <FormGroup>
           <Button type="submit">Add</Button>

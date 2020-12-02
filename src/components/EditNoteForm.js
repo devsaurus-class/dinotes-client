@@ -1,10 +1,14 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import { unwrapResult } from "@reduxjs/toolkit";
 import { Form, FormGroup, Label, Input, TextArea } from './ui/Form';
 import Button from './ui/Button';
 import Message from './ui/Message';
+import { useSelector, useDispatch } from "react-redux";
+
+import { getNoteById, updateExistingNote, deleteNote, statusReset } from "../features/notes/notesSlice";
 
 const InfoWrapper = (props) => {
   const { status } = props;
@@ -21,67 +25,64 @@ const InfoWrapper = (props) => {
 const EditNoteForm = () => {
   const location = useLocation();
   const history = useHistory();
-  const [currentNote, setCurrentNote] = useState({ title: '', note: '' });
+
+  const dispatch = useDispatch();
+
+  const noteId = location.pathname.replace('/edit/', '');
+
+  const currentNote = useSelector(state => getNoteById(state,noteId));
+
+  const [state, setState] = useState(currentNote);
   const [isSuccess, setIsSuccess] = useState(null);
 
-  useEffect(() => {
-    const noteId = location.pathname.replace('/edit/', '');
-
-    async function fetchData() {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/note/${noteId}`);
-      const data = await response.json();
-      setCurrentNote(data);
-    }
-
-    fetchData();
-  }, []);
-
   const handleTitleChange = (e) => {
-    setCurrentNote({ ...currentNote, title: e.target.value });
+    setState({ ...state, title: e.target.value });
   };
 
   const handleNoteChange = (e) => {
-    setCurrentNote({ ...currentNote, note: e.target.value });
+    setState({ ...state, note: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    const options = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentNote)
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    async function submitData() {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/note/${currentNote._id}`, options);
-      if (response.ok) {
+    try {
+      const actionResult = await dispatch(updateExistingNote(state));
+      const result = unwrapResult(actionResult);
+      if(result) {
         setIsSuccess(true);
       } else {
         setIsSuccess(false);
       }
+    } catch (err) {
+      console.error("Terjadi kesalahan: ", err);
+      setIsSuccess(false);
+    } finally {
+      dispatch(statusReset());
     }
+  };
 
-    submitData();
-
+  const handleDeleteNote = async (e) => {
     e.preventDefault();
-  };
 
-  const handleDeleteNote = () => {
-    const options = {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' }
-    };
-
-    async function deleteData() {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/note/${currentNote._id}`, options);
-      if (response.ok) {
-        history.push('/');
+    try {
+      const actionResult = await dispatch(deleteNote(state));
+      const result = unwrapResult(actionResult);
+      if(result) {
+        setIsSuccess(true);
+      } else {
+        setIsSuccess(false);
       }
+    } catch (err) {
+      console.error("Terjadi kesalahan: ", err);
+      setIsSuccess(false);
+    } finally {
+      dispatch(statusReset());
+      history.push("/");
     }
-
-    deleteData();
   };
 
-  const { title, note } = currentNote;
+  const { title, note } = state;
 
   return (
     <>
