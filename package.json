@@ -2,7 +2,15 @@
   "name": "dinotes-app",
   "version": "0.1.0",
   "private": true,
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
+  },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -15,6 +23,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "styled-components": "^5.1.1",
+    "tailwindcss": "^2.0.2",
+    "twin.macro": "^2.0.7",
     "uuid": "^8.3.0"
   },
   "scripts": {

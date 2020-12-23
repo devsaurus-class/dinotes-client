@@ -1,11 +1,5 @@
-import styled from "styled-components";
+import tw from "twin.macro";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem;
-`;
+const Container = tw.div`flex flex-col items-center justify-center m-4`;
 
 export default Container;

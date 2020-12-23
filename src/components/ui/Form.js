@@ -1,31 +1,13 @@
-import styled from 'styled-components';
+import tw from "twin.macro";
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  min-width: 30vw;
-  margin: 1rem;
-`;
+const Form = tw.form`flex flex-col w-4/5`;
 
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const FormGroup = tw.div`flex flex-col`;
 
-const Label = styled.label`
-  text-align: left;
-  color: #4a5568;
-`;
+const FormButtonGroup = tw.div`flex justify-end`;
 
-const Input = styled.input`
-  margin: 1rem 0;
-  padding: 0.5rem;
-`;
+const Input = tw.input`my-8 p-2 text-xl font-bold w-full focus:outline-none focus:ring focus:border-blue-300`;
 
-const TextArea = styled.textarea`
-  margin: 1rem 0;
-  padding: 0.5rem;
-  resize: none;
-`;
+const TextArea = tw.textarea`resize-y mb-8 p-2 focus:outline-none focus:ring focus:border-blue-300`;
 
-export { Form, FormGroup, Label, Input, TextArea };
+export { Form, FormGroup, FormButtonGroup, Input, TextArea };

@@ -1,27 +1,32 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { Form, FormGroup, Label, Input, TextArea } from "./ui/Form";
-import Button from "./ui/Button";
-import Message from "./ui/Message";
-import { addNewNote, statusReset } from "../features/notes/notesSlice";
+import React, { useState } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { Form, FormGroup, FormButtonGroup, Input, TextArea } from './ui/Form';
+import Button from './ui/Button';
+import Message from './ui/Message';
+import { addNewNote, statusReset } from '../features/notes/notesSlice';
 
 const InfoWrapper = (props) => {
   const { status } = props;
 
   if (status !== null) {
     if (status === false) {
-      return <Message type="error" text="Title harus diisi" />;
+      return <Message type='error' text='Title cannot be empty' />;
     }
-    return <Message type="success" text="Data berhasil disimpan" />;
+    return <Message type='success' text='Data successfully saved' />;
   }
   return <></>;
 };
 
 const AddNoteForm = () => {
   const dispatch = useDispatch();
-  const [state, setState] = useState({ title: "", note: "" });
+  const [state, setState] = useState({
+    title: '',
+    note: '',
+  });
   const [isSuccess, setIsSuccess] = useState(null);
 
   const handleTitleChange = (e) => {
@@ -38,16 +43,16 @@ const AddNoteForm = () => {
     try {
       const actionResult = await dispatch(addNewNote(state));
       const result = unwrapResult(actionResult);
-      if(result) {
+      if (result) {
         setIsSuccess(true);
       } else {
         setIsSuccess(false);
       }
     } catch (err) {
-      console.error("Terjadi kesalahan: ", err);
+      console.error('Terjadi kesalahan: ', err);
       setIsSuccess(false);
     } finally {
-      dispatch(statusReset())
+      dispatch(statusReset());
     }
   };
 
@@ -58,26 +63,28 @@ const AddNoteForm = () => {
       <InfoWrapper status={isSuccess} />
       <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <Label>Title</Label>
           <Input
-            type="text"
-            name="title"
+            type='text'
+            name='title'
+            placeholder='Title'
             value={title}
             onChange={handleTitleChange}
           />
         </FormGroup>
         <FormGroup>
-          <Label>Note</Label>
           <TextArea
-            name="note"
-            rows="12"
+            name='note'
+            rows='12'
+            placeholder='Your content goes here..'
             value={note}
             onChange={handleNoteChange}
           />
         </FormGroup>
-        <FormGroup>
-          <Button type="submit">Add</Button>
-        </FormGroup>
+        <FormButtonGroup>
+          <Button type='submit'>
+            <FontAwesomeIcon icon={faSave} /> &nbsp; Save
+          </Button>
+        </FormButtonGroup>
       </Form>
     </>
   );
