@@ -8,7 +8,7 @@ import { faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
 import { fetchNotes, getFilteredNotes, updateSort } from '../features/notes/notesSlice';
 import Container from './ui/Container';
 
-const NotesListContainer = tw.div`grid grid-cols-1 md:grid-cols-3 gap-4 my-8`;
+const NotesListContainer = tw.div`grid grid-cols-1 md:grid-cols-3 gap-4 my-8 overflow-y-auto`;
 const Card = tw.div`text-left p-4 border rounded-md`;
 const Title = tw.h4`text-lg font-semibold text-purple-900`;
 const SearchBar = tw.input`m-4 p-2 text-left border rounded focus:outline-none focus:ring focus:border-blue-300`;
@@ -19,17 +19,16 @@ const DropdownPanel = tw.div`origin-top-right absolute right-0 w-48 rounded-md s
 const Menu = tw.ul`py-1`;
 const Item = tw.li`block px-4 py-2 w-full text-sm text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900`;
 
-
 const DropdownMenu = () => {
   const [visible, setVisible] = useState(false);
   const node = useRef();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClick);
+    document.addEventListener('mousedown', handleClick);
 
     return () => {
-      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener('mousedown', handleClick);
     };
   }, []);
 

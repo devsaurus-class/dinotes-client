@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <Container>
       <p>
-        by <a href="https://devsaurus.com">devsaurus</a> &copy; 2020
+        <a href="https://devsaurus.com">devsaurus</a> &copy; 2020
       </p>
     </Container>
   );

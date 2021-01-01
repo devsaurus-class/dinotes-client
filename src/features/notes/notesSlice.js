@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const user = JSON.parse(localStorage.getItem('user'));
+
 const initialState = {
   data: [],
   status: 'idle',
@@ -7,15 +9,30 @@ const initialState = {
 };
 
 export const fetchNotes = createAsyncThunk('notes/fetchNotes', async () => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/notes`);
-  const data = await response.json();
-  return data;
+  const requestOptions = {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/notes`, requestOptions);
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    throw Error(response.statusText);
+  }
 });
 
 export const addNewNote = createAsyncThunk('notes/AddNewNote', async (initialNotes) => {
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(initialNotes)
   };
 
@@ -25,14 +42,14 @@ export const addNewNote = createAsyncThunk('notes/AddNewNote', async (initialNot
     const noteAdded = { ...initialNotes, _id: data._id };
     return noteAdded;
   } else {
-    return null;
+    throw Error(response.statusText);
   }
 });
 
 export const updateExistingNote = createAsyncThunk('notes/updateNote', async (currentNote) => {
   const requestOptions = {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${user.token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(currentNote)
   };
 
@@ -40,14 +57,14 @@ export const updateExistingNote = createAsyncThunk('notes/updateNote', async (cu
   if (response.ok) {
     return currentNote;
   } else {
-    return null;
+    throw Error(response.statusText);
   }
 });
 
 export const deleteNote = createAsyncThunk('notes/deleteNote', async (currentNote) => {
   const requestOptions = {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { Authorization: `Bearer ${user.token}`, 'Content-Type': 'application/json' }
   };
 
   const response = await fetch(`${process.env.REACT_APP_API_URL}/note/${currentNote._id}`, requestOptions);
@@ -66,7 +83,7 @@ const notesSlice = createSlice({
     updateSort(state, action) {
       if (action.payload === 'oldest') {
         state.data = state.data.sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
-      } else if(action.payload === 'newest'){
+      } else if (action.payload === 'newest') {
         state.data = state.data.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
       }
     }
